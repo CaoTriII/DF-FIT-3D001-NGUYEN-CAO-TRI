@@ -1,0 +1,1 @@
+<h1>YOUR HAVE NEW BOOKING</h1>

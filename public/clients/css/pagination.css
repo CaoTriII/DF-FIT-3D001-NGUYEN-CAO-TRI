@@ -1,0 +1,24 @@
+.pagination-container {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-container .pagination {
+    display: flex;
+    gap: 30px;
+    color: black;
+}
+.pagination-container .pagination li {
+    width: 40px;
+    font-size: 22px;
+    padding: 7px 10px;
+    text-align: center;
+
+}
+.pagination-container .pagination li.active {
+    background:
+    #1c2540;
+    color: #fff;
+}
