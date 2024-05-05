@@ -53,7 +53,7 @@
         </thead>
         <tbody id="table_id">
             @foreach ($users as $item)
-                <tr class="item">
+                <tr class="{{ $item->deleted_at ? 'soft-deleted-row' : '' }}">
                     <td>{{$loop->iteration}}</td>
                     <td>{{$item->full_name}}</td>
                     <td>
@@ -95,10 +95,20 @@
                     @endif
                     </td>
                     <td><a href="{{route('user.edit',['id'=>$item->id])}}">Edit</a></td>
+                    @if ($item->deleted_at)
+                    <!-- Nút khôi phục -->
+                    <td>
+                        <form action="{{ route('user.restore', ['id' => $item->id]) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">Restore</button>
+                        </form>
+                    </td>
+                @else
+                    <!-- Nút xóa -->
                     @if ($item->id != 1)
-                    <td><a onClick="return confirmDelete ()" href="{{route('user.destroy',['id'=>$item->id])}}">Delete</a></td>
-
+                        <td><a onClick="return confirmDelete()" href="{{route('user.destroy',['id'=>$item->id])}}">Delete</a></td>
                     @endif
+                @endif
 
                 </tr>
             @endforeach

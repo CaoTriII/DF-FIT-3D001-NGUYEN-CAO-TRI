@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::orderBy('created_at','ASC')->where('status','!=',3)->get();
+        $users = User::orderBy('created_at','ASC')->withTrashed()->where('status','!=',3)->get();
 
         return view ('admin.modules.user.index', [
             'users' =>$users,
@@ -118,8 +118,27 @@ class UserController extends Controller
      */
     public function destroy(int $id)
     {
-        $user = User::findOrFail($id);
-        $user->status = 3;
-        $user->save();
+        $user = User::find($id);
+        if (!$user) {
+            abort(404);
+        }
+
+        // Thực hiện soft-delete
+        $user->delete();
+
+        return redirect()->route('admin.user.index')->with('success', 'User deleted successfully');
     }
+
+    public function restore($id)
+{
+    $user = User::withTrashed()->find($id);
+
+    if (!$user) {
+        abort(404);
+    }
+
+    $user->restore();
+
+    return redirect()->route('user.index')->with('success', 'User restored successfully');
+}
 }

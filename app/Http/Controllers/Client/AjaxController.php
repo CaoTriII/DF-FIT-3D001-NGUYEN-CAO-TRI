@@ -100,7 +100,17 @@ public function increaseRoomQuantity()
     }
     return response()->json(['message' => 'Room quantities increased successfully']);
 }
+public function searchByDistrict(Request $request)
+{
+    // Lấy ID quận từ request
+    $districtId = $request->input('districtId');
 
+    // Tìm kiếm khách sạn theo quận
+    $hotels = Hotel::where('district_id', $districtId)->get();
+
+    // Trả về kết quả tìm kiếm dưới dạng JSON
+    return response()->json($hotels);
+}
 }
 
 

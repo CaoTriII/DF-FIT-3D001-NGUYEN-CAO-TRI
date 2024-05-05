@@ -4,19 +4,22 @@
     function confirmDelete() {
         return confirm('Are you sure you want to delete this hotel?')
     }
+
+
 </script>
 @endpush
 @section('content')
 <div class="card form-content2">
-<div    class="form-content1">
+<div class="form-content1">
     <h3 class="card-title p-3">Hotel List</h3>
-    <div class="form-content1">
-        <form action="{{route('admin.hotel.index')}}" method="get">
-            Name :<input type="text" name="key" value="">
-
-    <button type="submit">Search</button>
-</form>
-</div>
+    <div class="form-content1" style="display: flex">
+        <form action="{{ route('admin.hotel.index') }}" method="GET">
+            <input type="text" name="key" placeholder="Search by hotel name">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
+    </div>
     <div class="card-tools" >
 
     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse" >
@@ -28,9 +31,7 @@
     </div>
 </div>
 <div class="card-body">
-
     <table id="example1" class="table table-bordered table-striped">
-
         <thead>
             <tr>
                 <th>ID</th>
@@ -49,7 +50,7 @@
         </thead>
         <tbody id="table_id">
             @foreach ($hotel as $item)
-                <tr class="item">
+                <tr class="item {{ $item->deleted_at ? 'soft-deleted-row' : '' }}">
                     <td>{{$loop->iteration}}</td>
                     <td>{{$item->name}}</td>
                     <td>{{$item->service}}</td>
@@ -122,23 +123,53 @@
                     <td><a href="{{route('admin.hotel.showHotelOrders',['id'=>$item->id])}}">Order List</a></td>
                     <td><a href="{{route('admin.hotel.roomdetails',['id'=>$item->id]) }}">Room List</a></td>
                     <td><a href="{{route('admin.hotel.edit',['id'=>$item->id]) }}">Edit</a></td>
-                    <td><a onClick="return confirmDelete ()" href="{{route('admin.hotel.destroy',['id'=>$item->id]) }}">Delete</a></td>
+                    <td class="{{ $item->deleted_at ? 'soft-deleted' : '' }}">
+                        @if ($item->deleted_at)
+                            <!-- Nút Restore -->
+                            <form action="{{ route('admin.hotel.restore', ['id' => $item->id]) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-danger">Restore</button>
+                            </form>
+                        @else
+                            <!-- Hiển thị thông tin bình thường -->
+                            <a onClick="return confirmDelete()" href="{{ route('admin.hotel.destroy', ['id' => $item->id]) }}">Delete</a>
+                        @endif
+                    </td>
                 </tr>
             @endforeach
         </tbody>
       </table>
     </div>
-    <div class="card-footer clearfix">
-        {{ $hotel->links() }}
-        {{-- {{ $productCategories->withQueryString() }} --}}
-        {{-- <ul class="pagination pagination-sm m-0 float-right">
-          <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-        </ul> --}}
-      </div>
+    <div class="pagination-container">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if ($hotel->onFirstPage())
+                    <li class="page-item disabled"><span class="page-link">« Previous</span></li>
+                @else
+                    <li class="page-item"><a class="page-link" href="{{ $hotel->previousPageUrl() }}">« Previous</a></li>
+                @endif
+
+                <!-- Hiển thị các trang được phân -->
+                @for ($i = 1; $i <= $hotel->lastPage(); $i++)
+                    <li class="page-item {{ ($i === $hotel->currentPage()) ? 'active' : '' }}">
+                        <a class="page-link" href="{{ $hotel->url($i) }}">{{ $i }}</a>
+                    </li>
+                @endfor
+
+                @if ($hotel->hasMorePages())
+                    <li class="page-item"><a class="page-link" href="{{ $hotel->nextPageUrl() }}">Next »</a></li>
+                @else
+                    <li class="page-item disabled"><span class="page-link">Next »</span></li>
+                @endif
+            </ul>
+        </nav>
+    </div>
+
+
+
+
+
 </div>
+
 <!-- /.card -->
 @endsection

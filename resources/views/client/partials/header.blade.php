@@ -49,7 +49,7 @@
                                                          @php
                                                              $level = Auth::user()->level;
                                                          @endphp
-                                                         @if ($level == 4 )
+                                                         @if ($level == 4)
                                                          <a href="{{route('bookinglist')}}" class="list-group-item list-group-item-action">
                                                              <div class="msg-body">
                                                                  <div class="msg-content">

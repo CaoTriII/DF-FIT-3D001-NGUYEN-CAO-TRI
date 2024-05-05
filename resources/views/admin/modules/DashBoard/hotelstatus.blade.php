@@ -41,11 +41,7 @@
                                         color: white;
                                     }
                                 </style>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <p class="font-size-14">Showing 1 to 8 of 20 results</p>
-                                    </div>
-                                </div>
+
                             </div>
                             <div class="form-content2">
                                 <h3 class="title" style="margin-bottom: 40px">TODAY CHECK-IN HOTEL</h3>

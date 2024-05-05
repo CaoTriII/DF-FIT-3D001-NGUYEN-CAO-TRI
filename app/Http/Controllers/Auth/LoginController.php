@@ -22,8 +22,14 @@ class LoginController extends Controller
             'status' =>1
         ];
         if (Auth::attempt($credentials)) {
-            return redirect()->route('client.index');
+            $user = Auth::user();
+            if ($user->level == 1 || $user->level == 2) {
+                return redirect()->route('dashboard'); // Điều hướng đến trang admin dashboard
+            } else {
+                return redirect()->route('client.index'); // Điều hướng đến trang client index nếu không phải là admin hoặc owner
+            }
         }
+
         return redirect('/');
     }
 

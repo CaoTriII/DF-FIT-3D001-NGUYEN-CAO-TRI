@@ -13,6 +13,8 @@
 
     <!-- Template CSS Files -->
     <link rel="stylesheet" href="{{asset('clients/css/bootstrap.min.css') }}">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{{asset('clients/css/bootstrap-select.min.css') }}">
     <link rel="stylesheet" href="{{asset('clients/css/line-awesome.css') }}">
     <link rel="stylesheet" href="{{asset('clients/css/owl.carousel.min.css') }}">
@@ -24,7 +26,7 @@
     <link rel="stylesheet" href="{{asset('clients/css/jquery-ui.css') }}">
     <link rel="stylesheet" href="{{asset('clients/css/flag-icon.min.css') }}">
     <link rel="stylesheet" href="{{asset('clients/css/style.css') }}">
-    <link rel="stylesheet" href="{{asset('clients/css/pagination.css') }}">
+    {{-- <link rel="stylesheet" href="{{asset('clients/css/pagination.css') }}"> --}}
 
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>

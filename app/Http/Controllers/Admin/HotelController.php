@@ -19,17 +19,24 @@ class HotelController extends Controller
 {
     public function index(Request $request)
     {
-
         $user_level = Auth::user()->level;
-        if($user_level == 1 || $user_level == 3){
-            $hotel = Hotel::get();
-        }
-        else{
+        if ($user_level == 1 || $user_level == 3) {
+            $query = Hotel::query();
+        } else {
             $user_id = Auth::user()->id;
-            $hotel = Hotel::where('user_id',$user_id)->orderBy('created_at','DESC')->paginate();
+            $query = Hotel::where('user_id', $user_id);
         }
-        return view ('admin.modules.hotel.index',[
-            'hotel' =>$hotel,
+
+        // Thêm điều kiện tìm kiếm
+        $key = $request->input('key');
+        if (!empty($key)) {
+            $query->where('name', 'like', "%$key%");
+        }
+
+        $hotel = $query->withTrashed()->orderBy('created_at', 'DESC')->paginate(3);
+
+        return view('admin.modules.hotel.index', [
+            'hotel' => $hotel,
         ]);
     }
     public function create()
@@ -113,16 +120,14 @@ class HotelController extends Controller
     }
     public function destroy(int $id)
     {
-        $hotel  = Hotel::find($id);
-            if($hotel == null) {
-                abort(404);
-            }
-            $old_image_path = public_path('uploads/'.$hotel->image);
-            if(file_exists($old_image_path)){
-                unlink($old_image_path);
-            }
-        $hotel ->delete();
-        return redirect()->route('admin.hotel.index')->with('success','Hotel delete successfully');
+        $hotel = Hotel::find($id);
+        if (!$hotel) {
+            abort(404);
+        }
+
+        $hotel->delete();
+
+        return redirect()->route('admin.hotel.index')->with('success', 'Hotel deleted successfully');
     }
     public function roomdetails($id)
     {
@@ -229,5 +234,18 @@ class HotelController extends Controller
             'ordersByHotel' => $ordersByHotel,
         ]);
     }
+    public function restore($id)
+    {
+        $hotel = Hotel::withTrashed()->find($id);
+
+        if (!$hotel) {
+            abort(404);
+        }
+
+        $hotel->restore();
+
+        return redirect()->route('admin.hotel.index')->with('success', 'Hotel restored successfully');
+    }
+
 
 }

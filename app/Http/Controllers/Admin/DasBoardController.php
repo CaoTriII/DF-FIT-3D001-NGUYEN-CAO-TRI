@@ -83,11 +83,52 @@ class DasBoardController extends Controller
         ->select('status', DB::raw('COUNT(*) as total_booking'))
         ->groupBy('status')
         ->get();
-        $result=[];
-        $result[]= ['Status','Total'];
-        foreach($bookingstatus as $item){
-            $result []= [ucfirst($item ->status),($item->total_booking)];
+        $currentYear = Carbon::now()->year;
+        $monthlyRevenue = [];
+        $monthNames = [
+            '01' => 'Jan',
+            '02' => 'Feb',
+            '03' => 'Mar',
+            '04' => 'Apr',
+            '05' => 'May',
+            '06' => 'Jun',
+            '07' => 'Jul',
+            '08' => 'Aug',
+            '09' => 'Sep',
+            '10' => 'Oct',
+            '11' => 'Nov',
+            '12' => 'Dec'
+        ];
+
+        for ($month = 1; $month <= 12; $month++) {
+            $monthLabel = sprintf('%02d', $month); // Định dạng tháng thành dạng 'MM' (01, 02, ..., 12)
+            $monthlyRevenue[$monthNames[$monthLabel]] = 0; // Khởi tạo giá trị doanh số ban đầu là 0 cho mỗi tháng
         }
+        foreach ($result as $order) {
+            $orderYear = Carbon::parse($order->created_at)->year;
+            if ($orderYear == $currentYear) {
+                $month = Carbon::parse($order->created_at)->format('m');
+                $monthLabel = sprintf('%02d', $month);
+                $orderTotal = $order->price; // Sử dụng trường 'price' để lấy giá của đơn hàng
+                $monthlyRevenue[$monthNames[$monthLabel]] += $orderTotal;
+            }
+        }
+        $ordersByHotelTotal = []; // Mảng lưu trữ tổng doanh số từng khách sạn
+        foreach ($result as $order) {
+            $hotelId = $order->hotel_id;
+            if (!isset($ordersByHotelTotal[$hotelId])) {
+                $ordersByHotelTotal[$hotelId] = 0;
+            }
+            $ordersByHotelTotal[$hotelId] += $order->price; // Tính tổng doanh số từng khách sạn
+        }
+
+        // Chuẩn bị dữ liệu cho biểu đồ
+        $chartData = [];
+        foreach ($ordersByHotelTotal as $hotelId => $revenue) {
+            $hotelName = $result->where('hotel_id', $hotelId)->first()->name; // Lấy tên khách sạn từ $result
+            $chartData[] = ['hotel' => $hotelName, 'revenue' => floatval($revenue)];
+        }
+        // dd($chartData);
         return view('admin.modules.DashBoard.dashboard', [
             'totalOrderCount' => $totalOrderCount,
             'ordersByHotel' => $ordersByHotel,
@@ -95,7 +136,9 @@ class DasBoardController extends Controller
             'todayOrdersByHotelTotal' => $todayOrdersByHotelTotal,
             'todayOrdersByHotelDetails' => $todayOrdersByHotelDetails,
             'bookingData' => $bookingData,
-            'result'=>$result
+            'result'=>$result,
+            'monthlyRevenue'=>$monthlyRevenue,
+            'chartData' => $chartData
         ]);
     }
     public function dashboardBooking(Request $request)

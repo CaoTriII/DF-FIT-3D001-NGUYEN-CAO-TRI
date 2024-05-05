@@ -583,7 +583,24 @@ body {
 
 .border-bottom {
   border-bottom-color: rgba(128, 137, 150, 0.1) !important; }
+  .soft-deleted-row {
+    background-color: #878484; /* Màu nền xám nhạt */
+    opacity: 0.5; /* Làm mờ các hàng */
+}
 
+/* Định nghĩa kiểu cho các nút "Restore" */
+.restore-btn {
+    background-color: transparent;
+    border: none;
+    color: red; /* Màu chữ mặc định */
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+/* Hiệu ứng hover cho nút "Restore" */
+.restore-btn:hover {
+    color: rgb(182, 14, 14); /* Màu chữ khi hover */
+}
 /*==== bg =====*/
 .bg-img-transparent {
   background-image: none !important; }

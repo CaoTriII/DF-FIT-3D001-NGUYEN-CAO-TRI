@@ -1,21 +1,83 @@
 @extends('admin.master')
 @push('handlejs')
 <script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
+var ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
+    var monthlyRevenue = {!! json_encode($monthlyRevenue) !!};
+    var labels = Object.keys(monthlyRevenue);
+    var data = Object.values(monthlyRevenue);
 
-    function drawChart() {
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Monthly Revenue',
+                data: data,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    var chartData = @json($chartData);
 
-      var data = google.visualization.arrayToDataTable(@json($result));
-    
-      var options = {
-        title: 'Order Summary '
-      };
+var hotelNames = chartData.map(function(item) {
+    return item.hotel;
+});
+var revenues = chartData.map(function(item) {
+    return item.revenue;
+});
 
-      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-      chart.draw(data, options);
+var ctx = document.getElementById('revenueChart').getContext('2d');
+var revenueChart = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: {
+        labels: hotelNames, // Sử dụng tên khách sạn làm nhãn cho cột dọc
+        datasets: [{
+            label: 'Revenue',
+            data: revenues, // Sử dụng doanh số là giá trị cho cột ngang
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            x: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Revenue'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Hotel'
+                }
+            }
+        }
     }
+});
+var currentDate = new Date();
+    var day = currentDate.getDate();
+    var month = currentDate.getMonth() + 1;
+    var year = currentDate.getFullYear();
+
+    // Format ngày hiện tại
+    var formattedDate = day + '/' + month + '/' + year;
+
+    // Hiển thị ngày hiện tại vào thẻ <span> có id là 'currentDate'
+    document.getElementById('currentDate').textContent = formattedDate;
   </script>
 @endpush
 @section('content')
@@ -137,13 +199,24 @@
                             @endif
                         </div><!-- end row -->
                     </div><!-- end col-lg-12 -->
-                    <div class="col-lg-12 responsive-column">
-                        <div class="form-box">
-                            <div class="form-title-wrap">
-                                <div id="piechart" style="width: 900px; height: 500px;"></div>
+                    <div class="container">
+                        <h1 class="info__desc" style="color: black">Monthly Revenue</h1>
+
+                        <canvas id="monthlyRevenueChart" width="800" height="400"></canvas>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <h1 class="info__desc" style="color: black">Daily Revenue: </h1><span id="currentDate"></span>
+
+                                    <div class="card-body">
+                                        <canvas id="revenueChart"></canvas>
+                                    </div>
+                                </div>
                             </div>
-                        </div><!-- end form-box -->
-                    </div><!-- end col-lg-7-->
+                        </div>
+                    </div>
                 </div><!-- end row -->
                 <div class="border-top mt-4"></div>
             </div><!-- end container-fluid -->

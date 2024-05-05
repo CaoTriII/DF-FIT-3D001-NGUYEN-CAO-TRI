@@ -128,9 +128,31 @@
 
             @endforeach
         </tbody>
-        <div>
-            {{$paginate->links()}}
+        <div class="pagination-container">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    @if ($hotel->onFirstPage())
+                        <li class="page-item disabled"><span class="page-link">« Previous</span></li>
+                    @else
+                        <li class="page-item"><a class="page-link" href="{{ $hotel->previousPageUrl() }}">« Previous</a></li>
+                    @endif
+
+                    <!-- Hiển thị các trang được phân -->
+                    @for ($i = 1; $i <= $hotel->lastPage(); $i++)
+                        <li class="page-item {{ ($i === $hotel->currentPage()) ? 'active' : '' }}">
+                            <a class="page-link" href="{{ $hotel->url($i) }}">{{ $i }}</a>
+                        </li>
+                    @endfor
+
+                    @if ($hotel->hasMorePages())
+                        <li class="page-item"><a class="page-link" href="{{ $hotel->nextPageUrl() }}">Next »</a></li>
+                    @else
+                        <li class="page-item disabled"><span class="page-link">Next »</span></li>
+                    @endif
+                </ul>
+            </nav>
         </div>
+
       </table>
 
     </div>

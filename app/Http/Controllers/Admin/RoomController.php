@@ -19,7 +19,7 @@ class RoomController extends Controller
      */
     public function index()
     {
-        $room = Room::orderBy('created_at','ASC')->get();
+        $room = Room::orderBy('created_at','ASC')->withTrashed()->get();
         return view ('admin.modules.room.index',[
             'room' => $room
         ]);
@@ -160,16 +160,17 @@ class RoomController extends Controller
     }
     public function destroy(int $id)
     {
-        $room  = Room::find($id);
-            if($room == null) {
-                abort(404);
-            }
-            $old_image_path = public_path('uploads/'.$room->image);
-            if(file_exists($old_image_path)){
-                unlink($old_image_path);
-            }
-        $room ->delete();
-        return redirect()->route('admin.room.index')->with('success','room delete successfully');
+        $room = Room::find($id);
+        if (!$room) {
+            abort(404);
+        }
+
+
+
+        // Thực hiện soft-delete
+        $room->delete();
+
+        return redirect()->route('admin.room.index')->with('success', 'Room deleted successfully');
     }
     public function uploadFile (Request $request, $id)
     {
@@ -198,5 +199,16 @@ class RoomController extends Controller
         $room_image->delete();
         return redirect()->back();
     }
+    public function restore($id)
+    {
+        $room = Room::withTrashed()->find($id);
 
+        if (!$room) {
+            abort(404);
+        }
+
+        $room->restore();
+
+        return redirect()->route('admin.room.index')->with('success', 'Room restored successfully');
+    }
 }

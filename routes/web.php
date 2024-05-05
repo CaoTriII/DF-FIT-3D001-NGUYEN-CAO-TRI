@@ -98,6 +98,7 @@ Route::get('/orderList/{user_id}', [HotelController::class,'orderList'])->name('
 Route::get('/todayorderList/{id}', [HotelController::class,'todayBooking'])->name('todayorderList');
 
 Route::post('/markOrderAsNew/{bookingDetailId}', [OrderController::class, 'markOrderAsNew'])->name('markOrderAsNew');
+Route::get('searchByDistrict', 'AjaxController@searchByDistrict')->name('searchByDistrict');
 
 Route::prefix('user')->name('user.')->controller(UserController::class)->group(function () {
     Route::get('index','index')->name('index');
@@ -108,6 +109,9 @@ Route::prefix('user')->name('user.')->controller(UserController::class)->group(f
     Route::get('edit/{id}','edit')->name('edit');
     Route::post('update/{id}','update')->name('update');
     Route::get('destroy/{id}','destroy')->name('destroy');
+
+    Route::post('restore/{id}', 'restore')->name('restore');
+
 });
 Route::prefix('admin')->name('admin.')->middleware('check_login')->group(function () {
     Route::prefix('hoteltype')->name('hoteltype.')->controller(HotelTypeController::class)->group(function () {
@@ -134,6 +138,9 @@ Route::prefix('admin')->name('admin.')->middleware('check_login')->group(functio
         Route::get('destroy/{id}','destroy')->name('destroy');
 
         Route::get('district','district')->name('district');
+
+        Route::post('restore/{id}', 'restore')->name('restore');
+
     });
     Route::prefix('roomtype')->name('roomtype.')->controller(RoomTypeController::class)->group(function () {
         Route::get('index','index')->name('index');
@@ -144,6 +151,9 @@ Route::prefix('admin')->name('admin.')->middleware('check_login')->group(functio
         Route::get('edit/{id}','edit')->name('edit');
         Route::post('update/{id}','update')->name('update');
         Route::get('destroy/{id}','destroy')->name('destroy');
+
+        Route::post('restore/{id}', 'restore')->name('restore');
+
     });
     Route::prefix('roomservice')->name('roomservice.')->controller(RoomserviceController::class)->group(function () {
         Route::get('index','index')->name('index');
